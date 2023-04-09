@@ -2,13 +2,17 @@ const mongoose = require('mongoose')
 
 const scheema = new mongoose.Schema({
     i_name:{
-        type:String
+        type:String,
+        required:true
     },
     i_catogery:{
-        type:String
+        type:String,
+        required:true
     },
     i_code:{
-        type:String
+        type:String,
+        unique:true,
+        required:true
     }
 })
 
