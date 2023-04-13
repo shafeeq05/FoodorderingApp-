@@ -28,7 +28,7 @@ const scheema = new mongoose.Schema({
             required:true
         },
         qnty:{
-            type:String,
+            type:Number,
             required:true
         },
         img:{

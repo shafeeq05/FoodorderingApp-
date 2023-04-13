@@ -3,16 +3,22 @@ const userControl = require('../../controllers/coustomer/login')
 const {auth} = require('../../middileware/jwtauth')
 
 
-router.post('/signup',userControl.signup.post)
+router.post('/signup',userControl.signup)
 
-router.post('/login',userControl.login.post)
-router.put('/login',userControl.login.put)
+router.get('/login',auth.coustomer,userControl.getuser)
+router.post('/login',userControl.login)
+router.put('/login',auth.coustomer,userControl.edit)
 
-router.get('/viewproduct',auth.coustomer,userControl.login.get)
+router.get('/viewproduct',auth.coustomer,userControl.login)
 
-router.post('/select-vendor',auth.coustomer,userControl.select.post)
+router.post('/select-vendors',auth.coustomer,userControl.select)
 
-router.post('/add-to-cart',auth.coustomer,userControl.cart.post)
-router.get('/add-to-cart',auth.coustomer,userControl.cart.get)
+router.post('/cart',auth.coustomer,userControl.postcart)
+router.get('/cart',auth.coustomer,userControl.getcart)
+router.delete('/cart',auth.coustomer,userControl.delete)
+
+router.post('/orders',auth.coustomer,userControl.orders)
+
+router.get('/logout',auth.coustomer,userControl.logout)
 
 module.exports = router

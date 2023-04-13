@@ -21,11 +21,38 @@ const scheema =  mongoose.Schema({
         required:true
     },
     cart:[{
-        // product:{
-        //    type: String,
-        //    required:true
-        // },
+        name:{
+            type:String,
+            required:true
+        },
+        price:{
+            type:Number,
+            required:true
+        },
+        qnty:{
+            type:Number,
+            required:true
+        },
+        img:{
+            type:String,
+            required:true
+        },
+        itemcode:{
+            required:true,
+            type:String
+        },
+        pid:{
+            required:true,
+            type:String
+        },
+        vid:{
+            required:true,
+            type:String
+        }
        
+    }],
+    orders:[{
+
     }]
 })
 

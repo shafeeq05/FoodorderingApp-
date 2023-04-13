@@ -6,8 +6,8 @@ const salt = 10
 
 module.exports = {
     //coustomer signup
-    signup:{
-        post:async(req,res)=>{
+    
+    signup:async(req,res)=>{
             console.log(req.body);
             const encript = await bcript.hash(req.body.password,salt)
             console.log(encript);
@@ -18,11 +18,10 @@ module.exports = {
                 email:req.body.email
             }).save()
             res.status(200).send('ok')
-        }
-    },
+        },
+    
 //coustomer login
-    login:{
-    get:async(req,res)=>{
+    getuser:async(req,res)=>{
         try {
             const data = await productScheema.find({},{product:1})
             res.json(data)
@@ -31,7 +30,7 @@ module.exports = {
         }
       
     },
-    post:async(req,res)=>{
+    login:async(req,res)=>{
         try {
             // console.log(req.body);
             const exist = await scheema.find({username:req.body.username})
@@ -50,52 +49,89 @@ module.exports = {
             res.status(404).send('internal error')
         }
     },
-    put:(req,res)=>{
+    edit:async(req,res)=>{
+        const usr = await scheema.find({_id:req.body.jwtid})
+        console.log(usr);
         res.status(200)
-    }
-},
-//coustomer select vendors
-select:{
-    post:async(req,res)=>{
-        console.log(req.body.vendor);
-       const data = await scheema.find({v_username:req.body.vendor})
-       
-        res.status(200).json(data)
-  
-}
-},
-//product add to cart
-cart:{
-    get:async(req,res)=>{
-        const id = jwt.verify(req.cookies.user.encript,'shafeeq').id
-        const cart = await scheema.find({_id:id},{cart:{_id:"642f9e9b8ea4c842fd043f03"}})
-        console.log(cart);
-        res.send('cart')
     },
 
-    post:async(req,res)=>{
+//coustomer select vendors
+select:async(req,res)=>{
+        console.log(req.body.vendor);
+       const data = await productScheema.find({_id:req.body.vendor},{password:0})
+       console.log(data);
+        res.status(200).json(data)
+  
+},
+
+//product add to cart
+
+    getcart:async(req,res)=>{
+        const cart = await scheema.find({_id:req.body.jwtid},{cart:1})
+        console.log(cart);
+        res.status(200).json(cart)
+    },
+
+    postcart:async(req,res)=>{
         try {
             const {vid,pid}=req.body
             const product = await productScheema.find({ "product._id": pid }  , { "product.$": 1 })
-            console.log(product[0]._id,"product",product[0].product[0]);
-            const id = jwt.verify(req.cookies.user.encript,'shafeeq').id
+            console.log(product);
+            const id = req.body.id
             const user = await scheema.find({_id:id})
-            
-            
+            console.log(user);
+    
               if(user){
-                const qnty = await scheema.find({_id:id},{cart:{qnty:1}});
-                console.log(qnty[0].cart,"user cart");
-            //    const data =  await scheema.updateOne({_id:id},{$push:{cart:product[0].product[0]}});
+                const cart= await  scheema.find({"cart.pid":pid},{"cart.$":1})
+                if(cart.length == 0){
+               const data =  await scheema.updateMany({_id:id},
+                {$push:{cart:{name:product[0].product[0].name,
+                price:product[0].product[0].price,
+                qnty:product[0].product[0].qnty,
+                img:product[0].product[0].img,
+                itemcode:product[0].product[0].itemcode,
+                pid:product[0].product[0]._id,
+                vid:product[0]._id
+            }}});
 
-            //    console.log(data,"if nte ullil");
-             res.send('ok')
+               console.log(data,"if nte ullil");
+             res.status(200).json('ok....if nte ulli')
+              }else{
+               const cart = await  scheema.updateOne({$and:[{_id:user[0]._id},{"cart.pid":pid}]},{$inc:{"cart.$.qnty":1}})
+                res.status(200).json('ok... elseil')
+                console.log(cart);
               }
+            }
         } catch (error) {
             console.log(error);
             res.send("error")
             
         }  
-    } 
+    },
+    delete:async(req,res)=>{
+
+    },
+
+
+    orders:async(req,res)=>{
+        try {
+            console.log(req.body);
+            const usr = req.body
+            console.log(usr);
+           const user = await scheema.find({_id:usr})
+           console.log(user);
+            res.status(200).send("order")
+            
+        } catch (error) {
+            console.log("error");
+        }
+        
+    },
+    logout:async(req,res)=>{
+    console.log();
+    const encript = jwt.sign({id:req.body.jwtid},"shafeeq")
+    res.cookie("user",{encript},{httpOnly:true,maxAge:0})
+    res.status(200).json('logout')
 }
 
 }
