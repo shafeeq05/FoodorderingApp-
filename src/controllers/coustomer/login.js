@@ -21,7 +21,7 @@ module.exports = {
         },
     
 //coustomer login
-    getuser:async(req,res)=>{
+    getProduct:async(req,res)=>{
         try {
             const data = await productScheema.find({},{product:1})
             res.json(data)
@@ -50,9 +50,26 @@ module.exports = {
         }
     },
     edit:async(req,res)=>{
-        const usr = await scheema.find({_id:req.body.jwtid})
-        console.log(usr);
-        res.status(200)
+     try {
+        const usr = await scheema.updateOne({
+            _id:req.body.jwtid},
+            {name:req.body.name,
+            username:req.body.username,
+            email:req.body.email
+            })
+            res.status(200).json("sucsessfully updated")
+     } catch (error) {
+        res.status(404).json("something went wrong")
+     }
+        
+    },
+    getUser:async(req,res)=>{
+      try {
+        const usr =  await scheema.find({_id:req.body.jwtid})
+      res.status(200).json(usr)
+      } catch (error) {
+        res.status(404).json("something went wrong")
+      }
     },
 
 //coustomer select vendors
@@ -66,25 +83,24 @@ select:async(req,res)=>{
 
 //product add to cart
 
-    getcart:async(req,res)=>{
+    getCart:async(req,res)=>{
         const cart = await scheema.find({_id:req.body.jwtid},{cart:1})
         console.log(cart);
         res.status(200).json(cart)
     },
 
-    postcart:async(req,res)=>{
+    postCart:async(req,res)=>{
         try {
             const {vid,pid}=req.body
             const product = await productScheema.find({ "product._id": pid }  , { "product.$": 1 })
             console.log(product);
-            const id = req.body.id
-            const user = await scheema.find({_id:id})
+            const user = await scheema.find({_id:req.body.jwtid})
             console.log(user);
     
               if(user){
                 const cart= await  scheema.find({"cart.pid":pid},{"cart.$":1})
                 if(cart.length == 0){
-               const data =  await scheema.updateMany({_id:id},
+               const data =  await scheema.updateMany({_id:req.body.jwtid},
                 {$push:{cart:{name:product[0].product[0].name,
                 price:product[0].product[0].price,
                 qnty:product[0].product[0].qnty,
@@ -108,30 +124,67 @@ select:async(req,res)=>{
             
         }  
     },
-    delete:async(req,res)=>{
-
+    update:async(req,res)=>{
+        try {
+            await scheema.updateOne({
+                $and:[{_id:req.body.jwtid},{"cart.pid":req.body.itemid}]},
+                {$inc:{"cart.$.qnty":-1}})
+                res.status(200).json("updated succsessfully")
+        } catch (error) {
+            res.status(404).json('error somthing went wrong') 
+        }
+    },
+    deleteCart:async(req,res)=>{
+      try {
+        const cart = await scheema.updateOne({_id:req.body.jwtid},{$pull:{cart:{pid:req.body.itemid}}})
+        console.log(cart);
+        res.status(200).json("sucsessfully updated")
+      } catch (error) {
+        res.status(404).json('error somthing went wrong')
+      }
     },
 
 
     orders:async(req,res)=>{
         try {
-            console.log(req.body);
-            const usr = req.body
-            console.log(usr);
-           const user = await scheema.find({_id:usr})
-           console.log(user);
+            
+           const user = await scheema.find({"cart._id":req.body.id},{"cart.$":1})
+           const {name,price,qnty,itemcode}=user[0].cart[0]
+           const usr = await scheema.updateMany({_id:req.body.jwtid},
+            {$push:{orders:{name:name,qnty:qnty,totalamt:qnty*price,itemcode:itemcode,status:"placed"}}})
+           console.log(user,usr);
             res.status(200).send("order")
             
         } catch (error) {
-            console.log("error");
+            res.status(404).json('error somthing went wrong')
         }
         
     },
     logout:async(req,res)=>{
-    console.log();
-    const encript = jwt.sign({id:req.body.jwtid},"shafeeq")
-    res.cookie("user",{encript},{httpOnly:true,maxAge:0})
-    res.status(200).json('logout')
+     console.log();
+     const encript = jwt.sign({id:req.body.jwtid},"shafeeq")
+     res.cookie("user",{encript},{httpOnly:true,maxAge:0})
+     res.status(200).json('logout')
+    },
+    deleteAccount:async(req,res)=>{
+       try {
+        const usr = await scheema.findById({_id:req.body.jwtid})
+        bcript.compare(req.body.password,usr.password)
+        .then(async(pass)=>{
+            if(pass){
+            await scheema.deleteOne({_id:req.body.jwtid})
+            const encript = jwt.sign({id:req.body.jwtid},"shafeeq")
+            res.cookie("user",{encript},{httpOnly:true,maxAge:0})
+            res.status(200).json('account deleted sucsess fully')
+            }
+            else{
+                res.status(400).json('please check your password')
+            }
+        })
+        
+       } catch (error) {
+        res.status(404).json('error somthing went wrong')
+       }
 }
 
 }

@@ -52,6 +52,11 @@ const scheema =  mongoose.Schema({
        
     }],
     orders:[{
+        name:{type:String},
+        qnty:{type:Number},
+        totalamt:{type:Number},
+        itemcode:{type:String},
+        status:{type:String}
 
     }]
 })

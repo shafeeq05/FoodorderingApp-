@@ -30,7 +30,7 @@ module.exports.auth = {
       const encode = req.cookies.user.encript;
       const decode = await jwt.verify(encode, "shafeeq").id;
       // const exist = await scheema.find({ _id: decode });
-      // console.log(exist);
+      // console.log(decode);
       req.body.jwtid = decode;
       next();
       return decode;
