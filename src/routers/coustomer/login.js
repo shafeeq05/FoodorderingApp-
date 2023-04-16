@@ -4,6 +4,7 @@ const {auth} = require('../../middileware/jwtauth')
 
 
 router.post('/signup',userControl.signup)
+router.post('/verify',userControl.otp)
 
 router.get('/login',auth.coustomer,userControl.getUser)
 router.post('/login',userControl.login)
@@ -20,6 +21,9 @@ router.put('/cart',auth.coustomer,userControl.update)
 router.delete('/cart',auth.coustomer,userControl.deleteCart)
 
 router.post('/orders',auth.coustomer,userControl.orders)
+
+router.post('/payment',auth.coustomer,userControl.pay)
+router.post('/payment-verify',auth.coustomer,userControl.verify)
 
 router.get('/logout',auth.coustomer,userControl.logout)
 

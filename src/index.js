@@ -3,9 +3,12 @@ const app = express();
 const bodyparser = require("body-parser");
 const cookiParser = require('cookie-parser')
 const mongoose = require("mongoose");
+const session = require('express-session')
 require("dotenv").config({ path: "../.env" });
 app.use(bodyparser.json());
 app.use(cookiParser())
+app.use(session({secret:'shafeeq'},{maxAge:1000*60}))
+
 //setup the mongo db connection
 mongoose
   .connect(process.env.MONGO_URL)
