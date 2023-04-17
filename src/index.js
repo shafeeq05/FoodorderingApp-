@@ -5,7 +5,8 @@ const cookiParser = require('cookie-parser')
 const mongoose = require("mongoose");
 const session = require('express-session')
 require("dotenv").config({ path: "../.env" });
-app.use(bodyparser.json());
+// app.use(bodyparser.json());
+app.use(express.json())
 app.use(cookiParser())
 app.use(session({secret:'shafeeq'},{maxAge:1000*60}))
 

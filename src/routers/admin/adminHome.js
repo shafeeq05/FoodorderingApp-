@@ -13,6 +13,7 @@ router.put('/adminlogin',auth.admin,adminControl.login.put)
 router.get('/orders',auth.admin,adminControl.order.get)
 
 router.get('/users',auth.admin,adminControl.user.get)
+router.delete('/user',auth.admin,adminControl.user.delete)
 
 router.get('/catogery',auth.admin,adminControl.catogery.get)
 

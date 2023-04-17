@@ -150,7 +150,7 @@ module.exports = {
       const user = await scheema.find({ _id: req.body.jwtid });
       console.log(user);
 
-      if (user) {
+      if (user) { 
         const cart = await scheema.find({ "cart.pid": pid }, { "cart.$": 1 });
         if (cart.length == 0) {
           const data = await scheema.updateMany(
@@ -285,7 +285,7 @@ module.exports = {
     const compaired = crypto.createHmac('sha256',process.env.key_secret)
     .update(razorpay_order_id +"|"+razorpay_payment_id)
     .digest("hex")
-    console.log(compaired);
+    console.log(compaired,);
     if(compaired==razorpay_signature){
         res.status(200).json("payment sucssess")
     }else{res.status(400).json("payment failed")}

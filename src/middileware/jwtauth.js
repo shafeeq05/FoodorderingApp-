@@ -10,7 +10,7 @@ module.exports.auth = {
       req.body.jwtid = decoded;
       next();
     } catch (error) {
-      res.status(200).send("404:unautherised admin");
+      res.status(404).json("404:unautherised admin");
     }
   },
   vendor: async (req, res, next) => {
